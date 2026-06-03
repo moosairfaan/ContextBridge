@@ -1,0 +1,149 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: color-mix(in srgb, var(--cb-accent) 18%, transparent);
+  color: var(--cb-accent);
+  border: 1px solid color-mix(in srgb, var(--cb-accent) 35%, transparent);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--cb-border);
+  background: var(--cb-surface);
+  color: var(--cb-text);
+  font-size: 12px;
+  font-weight: 500;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.btn:hover:not(:disabled) {
+  border-color: var(--cb-accent);
+  background: color-mix(in srgb, var(--cb-accent) 12%, var(--cb-surface));
+}
+
+.btnPrimary {
+  composes: btn;
+  background: color-mix(in srgb, var(--cb-accent) 22%, var(--cb-surface));
+  border-color: color-mix(in srgb, var(--cb-accent) 45%, var(--cb-border));
+  color: var(--cb-accent);
+}
+
+.btnDanger {
+  composes: btn;
+  color: var(--cb-danger);
+  border-color: color-mix(in srgb, var(--cb-danger) 40%, var(--cb-border));
+}
+
+.btnDanger:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--cb-danger) 12%, var(--cb-surface));
+  border-color: var(--cb-danger);
+}
+
+.btnSuccess {
+  composes: btn;
+  color: var(--cb-success);
+  border-color: color-mix(in srgb, var(--cb-success) 40%, var(--cb-border));
+}
+
+.row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--cb-text-muted);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.empty {
+  padding: 24px 12px;
+  text-align: center;
+  color: var(--cb-text-muted);
+  font-size: 12px;
+}
+
+.toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px;
+  background: var(--cb-surface);
+  border: 1px solid var(--cb-border);
+  border-radius: 10px;
+}
+
+.toggleLabel {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.toggleHint {
+  font-size: 11px;
+  color: var(--cb-text-muted);
+  margin-top: 2px;
+}
+
+.switch {
+  position: relative;
+  width: 40px;
+  height: 22px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 999px;
+  background: var(--cb-border);
+  transition: background 0.15s ease;
+}
+
+.switchOn {
+  background: var(--cb-accent);
+}
+
+.switchKnob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--cb-text);
+  transition: transform 0.15s ease;
+}
+
+.switchOn .switchKnob {
+  transform: translateX(18px);
+}
+
+.input {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--cb-border);
+  background: var(--cb-bg);
+  color: var(--cb-text);
+  font-size: 13px;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--cb-accent);
+}

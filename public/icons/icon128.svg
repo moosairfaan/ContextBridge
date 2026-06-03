@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-label="ContextBridge">
+  <rect width="128" height="128" fill="#0A0A0A"/>
+  <g
+    fill="none"
+    stroke="#FFFFFF"
+    stroke-width="6"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <ellipse cx="46" cy="64" rx="18" ry="28" transform="rotate(-42 46 64)"/>
+    <ellipse cx="82" cy="64" rx="18" ry="28" transform="rotate(42 82 64)"/>
+  </g>
+</svg>

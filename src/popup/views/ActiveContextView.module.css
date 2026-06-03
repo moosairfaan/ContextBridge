@@ -1,0 +1,53 @@
+.meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.tokens {
+  font-size: 12px;
+  color: var(--cb-text-muted);
+}
+
+.tokens strong {
+  color: var(--cb-success);
+  font-weight: 600;
+}
+
+.textarea {
+  width: 100%;
+  min-height: 280px;
+  resize: vertical;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--cb-border);
+  background: var(--cb-bg);
+  color: var(--cb-text);
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.textarea:focus {
+  outline: none;
+  border-color: var(--cb-accent);
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.status {
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--cb-success);
+  min-height: 16px;
+}
+
+.statusError {
+  color: var(--cb-danger);
+}

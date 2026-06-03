@@ -1,0 +1,42 @@
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.section {
+  margin-top: 4px;
+}
+
+.segmented {
+  display: flex;
+  gap: 6px;
+}
+
+.segment {
+  flex: 1;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--cb-border);
+  background: var(--cb-bg);
+  color: var(--cb-text-muted);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.segmentActive {
+  border-color: var(--cb-accent);
+  background: color-mix(in srgb, var(--cb-accent) 18%, var(--cb-bg));
+  color: var(--cb-accent);
+}
+
+.hint {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--cb-surface);
+  border: 1px solid var(--cb-border);
+  font-size: 11px;
+  color: var(--cb-text-muted);
+  line-height: 1.5;
+}

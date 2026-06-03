@@ -1,0 +1,26 @@
+{
+  "host_permissions": [
+    "https://chat.openai.com/*",
+    "https://www.chat.openai.com/*",
+    "https://chatgpt.com/*",
+    "https://www.chatgpt.com/*",
+    "https://claude.ai/*",
+    "https://www.claude.ai/*",
+    "https://gemini.google.com/*",
+    "https://www.gemini.google.com/*",
+    "https://perplexity.ai/*",
+    "https://www.perplexity.ai/*"
+  ],
+  "content_script_matches": [
+    "https://chat.openai.com/*",
+    "https://www.chat.openai.com/*",
+    "https://chatgpt.com/*",
+    "https://www.chatgpt.com/*",
+    "https://claude.ai/*",
+    "https://www.claude.ai/*",
+    "https://gemini.google.com/*",
+    "https://www.gemini.google.com/*",
+    "https://perplexity.ai/*",
+    "https://www.perplexity.ai/*"
+  ]
+}

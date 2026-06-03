@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ContextBridge Privacy Policy</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #fafafa;
+        --text: #1a1a1a;
+        --muted: #555;
+        --border: #e5e5e5;
+        --accent: #0a0a0a;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #0a0a0a;
+          --text: #f0f0f0;
+          --muted: #aaa;
+          --border: #2a2a2a;
+          --accent: #ffffff;
+        }
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          Helvetica,
+          Arial,
+          sans-serif;
+        font-size: 1rem;
+        line-height: 1.65;
+        color: var(--text);
+        background: var(--bg);
+      }
+
+      .page {
+        max-width: 42rem;
+        margin: 0 auto;
+        padding: 2.5rem 1.5rem 4rem;
+      }
+
+      header {
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid var(--border);
+      }
+
+      h1 {
+        margin: 0 0 0.5rem;
+        font-size: 1.75rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+
+      .meta {
+        margin: 0;
+        font-size: 0.9rem;
+        color: var(--muted);
+      }
+
+      h2 {
+        margin: 2rem 0 0.75rem;
+        font-size: 1.15rem;
+        font-weight: 600;
+      }
+
+      p,
+      li {
+        margin: 0 0 1rem;
+      }
+
+      ul {
+        margin: 0 0 1rem;
+        padding-left: 1.35rem;
+      }
+
+      li {
+        margin-bottom: 0.35rem;
+      }
+
+      a {
+        color: var(--accent);
+      }
+
+      .summary {
+        padding: 1rem 1.15rem;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: color-mix(in srgb, var(--border) 25%, transparent);
+      }
+
+      .summary strong {
+        display: block;
+        margin-bottom: 0.5rem;
+      }
+
+      code {
+        font-size: 0.88em;
+        padding: 0.1em 0.35em;
+        border-radius: 4px;
+        background: color-mix(in srgb, var(--border) 60%, transparent);
+      }
+
+      footer {
+        margin-top: 2.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border);
+        font-size: 0.9rem;
+        color: var(--muted);
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <header>
+        <h1>ContextBridge Privacy Policy</h1>
+        <p class="meta">Last updated: June 2, 2026</p>
+      </header>
+
+      <p class="summary">
+        <strong>Summary</strong>
+        ContextBridge stores everything on your device. We do not collect
+        personal information, run analytics, or send your data to any external
+        server.
+      </p>
+
+      <p>
+        This privacy policy describes how the ContextBridge Chrome extension
+        (“ContextBridge,” “the extension,” “we”) handles information when you
+        install and use it. ContextBridge helps you capture and reuse
+        conversation context across supported AI chat websites in your browser.
+      </p>
+
+      <h2>Who we are</h2>
+      <p>
+        ContextBridge is a browser extension published for Google Chrome. This
+        policy applies only to the extension and its bundled pages (such as the
+        popup). It does not govern the AI platforms you visit; those sites have
+        their own privacy policies.
+      </p>
+
+      <h2>Information we collect</h2>
+      <p>
+        <strong>We do not collect personal information.</strong> ContextBridge
+        does not ask for your name, email address, account credentials, or any
+        other information that identifies you.
+      </p>
+      <p>
+        The extension may read text visible on supported AI chat pages so it can
+        build compressed context and optionally insert that context into a
+        composer field. That processing happens in your browser. We do not
+        receive a copy of that text on our servers because we do not operate
+        servers for this extension.
+      </p>
+
+      <h2>Where your data is stored</h2>
+      <p>
+        All data ContextBridge saves stays <strong>on your device</strong>,
+        inside your browser profile, using the Chrome extension storage API
+        (<code>chrome.storage.local</code>) only.
+      </p>
+      <p>Stored data may include, for example:</p>
+      <ul>
+        <li>Compressed conversation context and session metadata</li>
+        <li>Extension settings (such as injection and compression preferences)</li>
+      </ul>
+      <p>
+        This data is not synced to ContextBridge servers. It is subject to
+        Chrome’s normal extension storage limits and remains until you remove
+        it or uninstall the extension.
+      </p>
+
+      <h2>No external transmission</h2>
+      <p>
+        <strong>No data is ever sent to external servers</strong> by
+        ContextBridge for storage, analytics, advertising, or any other purpose.
+        The extension does not include third-party analytics, tracking pixels,
+        or remote logging.
+      </p>
+      <p>
+        Network activity you see while using AI platforms (for example, when
+        ChatGPT, Claude, Gemini, or Perplexity communicate with their own
+        services) is between you and those websites, not ContextBridge.
+      </p>
+
+      <h2>No analytics or tracking</h2>
+      <p>
+        ContextBridge does not use analytics, session recording, fingerprinting,
+        or behavioral tracking. We do not monitor which prompts you send or how
+        often you use each platform beyond what is needed locally to provide
+        extension features.
+      </p>
+
+      <h2>Which sites the extension can access</h2>
+      <p>
+        ContextBridge only runs on AI platform pages declared in the extension
+        manifest. Host access and content scripts are limited to:
+      </p>
+      <ul>
+        <li><code>https://chat.openai.com/*</code></li>
+        <li><code>https://www.chat.openai.com/*</code></li>
+        <li><code>https://chatgpt.com/*</code></li>
+        <li><code>https://www.chatgpt.com/*</code></li>
+        <li><code>https://claude.ai/*</code></li>
+        <li><code>https://www.claude.ai/*</code></li>
+        <li><code>https://gemini.google.com/*</code></li>
+        <li><code>https://www.gemini.google.com/*</code></li>
+        <li><code>https://perplexity.ai/*</code></li>
+        <li><code>https://www.perplexity.ai/*</code></li>
+      </ul>
+      <p>
+        The extension does not request broad access to all websites. It uses
+        permissions such as <code>storage</code>, <code>tabs</code>,
+        <code>activeTab</code>, and <code>scripting</code> only as needed to
+        operate on those supported origins.
+      </p>
+
+      <h2>How you can delete your data</h2>
+      <p>
+        You can clear all data ContextBridge has saved at any time. Options
+        include:
+      </p>
+      <ul>
+        <li>
+          Using controls inside the extension popup (for example, clearing a
+          session or editing stored context)
+        </li>
+        <li>
+          Running
+          <code>chrome.storage.local.clear()</code> from the extension’s
+          service worker or developer tools, which removes every key stored by
+          this extension in local storage
+        </li>
+        <li>Uninstalling ContextBridge from Chrome, which removes extension data</li>
+      </ul>
+      <p>
+        After clearing storage or uninstalling, previously saved sessions and
+        settings cannot be recovered from ContextBridge.
+      </p>
+
+      <h2>Children’s privacy</h2>
+      <p>
+        ContextBridge is not directed at children under 13, and we do not
+        knowingly collect personal information from anyone.
+      </p>
+
+      <h2>Changes to this policy</h2>
+      <p>
+        We may update this privacy policy if the extension’s behavior or legal
+        requirements change. The “Last updated” date at the top of this page
+        will reflect the latest version. Continued use of the extension after
+        changes means you accept the updated policy.
+      </p>
+
+      <h2>Contact</h2>
+      <p>
+        If you have questions about this privacy policy or ContextBridge data
+        practices, contact the developer through the support channel listed on
+        the Chrome Web Store listing for ContextBridge.
+      </p>
+
+      <footer>
+        <p>© 2026 ContextBridge. All rights reserved.</p>
+      </footer>
+    </main>
+  </body>
+</html>
