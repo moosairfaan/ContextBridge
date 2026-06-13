@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ContextBridge — ChatGPT to Claude handoff</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f0f12;
+      --surface: #1a1a22;
+      --border: #2a2a36;
+      --text: #e8e8ed;
+      --muted: #8888a0;
+      --accent: #7c6aef;
+      --accent-hover: #9585f5;
+      --success: #4ade80;
+      --radius: 10px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    .wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 48px 24px 64px;
+    }
+
+    header {
+      margin-bottom: 36px;
+    }
+
+    header h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    header h1 span {
+      color: var(--accent);
+    }
+
+    header p {
+      color: var(--muted);
+      margin-top: 8px;
+      font-size: 0.95rem;
+    }
+
+    label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 220px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: "SF Mono", "Fira Code", "Cascadia Code", monospace;
+      font-size: 0.82rem;
+      line-height: 1.55;
+      padding: 14px;
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    textarea:focus {
+      border-color: var(--accent);
+    }
+
+    textarea::placeholder {
+      color: #55556a;
+    }
+
+    #output {
+      min-height: 260px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    button {
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      padding: 10px 20px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+    }
+
+    button:active {
+      transform: scale(0.97);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-hover);
+    }
+
+    .btn-secondary {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--muted);
+    }
+
+    .hint {
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-top: 10px;
+    }
+
+    .hint code {
+      background: var(--bg);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.78rem;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #222230;
+      border: 1px solid var(--border);
+      color: var(--success);
+      padding: 12px 22px;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      opacity: 0;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    .bookmarklet-note {
+      margin-top: 40px;
+      padding-top: 28px;
+      border-top: 1px solid var(--border);
+    }
+
+    .bookmarklet-note h2 {
+      font-size: 1rem;
+      margin-bottom: 8px;
+    }
+
+    .bookmarklet-note p {
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Context<span>Bridge</span></h1>
+      <p>Paste a ChatGPT conversation and get a clean handoff summary for Claude.</p>
+    </header>
+
+    <label for="input">Paste ChatGPT conversation</label>
+    <div class="panel">
+      <textarea id="input" placeholder="You:&#10;How do I set up a REST API in Node?&#10;&#10;ChatGPT:&#10;Here's how to get started with Express...&#10;&#10;You:&#10;What about authentication?&#10;&#10;ChatGPT:&#10;For auth, you can use JWT tokens..."></textarea>
+      <p class="hint">Works with copied text that uses <code>You:</code> and <code>ChatGPT:</code> labels, or use the bookmarklet on chatgpt.com.</p>
+    </div>
+
+    <div class="actions">
+      <button class="btn-primary" id="formatBtn">Format for Claude</button>
+      <button class="btn-secondary" id="copyBtn" disabled>Copy output</button>
+      <button class="btn-secondary" id="clearBtn">Clear</button>
+    </div>
+
+    <label for="output">Handoff summary</label>
+    <div class="panel">
+      <textarea id="output" readonly placeholder="Formatted summary will appear here…"></textarea>
+    </div>
+
+    <div class="bookmarklet-note">
+      <h2>Bookmarklet</h2>
+      <p>Drag the link from <code>bookmarklet.txt</code> to your bookmarks bar. Click it on any ChatGPT conversation to copy a formatted handoff directly.</p>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    (function () {
+      var MAX_EXCHANGES = 4;
+      var MAX_KEY_POINTS = 4;
+
+      function parseLabeledText(text) {
+        var turns = [];
+        var re = /(?:^|\n)(You|ChatGPT)\s*:\s*/gi;
+        var match;
+        var lastIndex = 0;
+        var lastRole = null;
+
+        while ((match = re.exec(text)) !== null) {
+          if (lastRole !== null) {
+            var content = text.slice(lastIndex, match.index).trim();
+            if (content) {
+              turns.push({ role: lastRole, content: content });
+            }
+          }
+          lastRole = match[1].toLowerCase() === 'you' ? 'user' : 'assistant';
+          lastIndex = match.index + match[0].length;
+        }
+
+        if (lastRole !== null) {
+          var tail = text.slice(lastIndex).trim();
+          if (tail) {
+            turns.push({ role: lastRole, content: tail });
+          }
+        }
+
+        return turns;
+      }
+
+      function firstSentence(text) {
+        var m = text.match(/^[\s\S]{1,200}?[.!?](?:\s|$)/);
+        if (m) return m[0].trim();
+        var line = text.split('\n')[0].trim();
+        return line.length > 120 ? line.slice(0, 117) + '…' : line;
+      }
+
+      function truncate(text, max) {
+        if (text.length <= max) return text;
+        return text.slice(0, max - 1).trim() + '…';
+      }
+
+      function extractTopic(turns) {
+        var firstUser = null;
+        for (var i = 0; i < turns.length; i++) {
+          if (turns[i].role === 'user') {
+            firstUser = turns[i].content;
+            break;
+          }
+        }
+        if (!firstUser) return 'the previous discussion';
+        return truncate(firstSentence(firstUser), 100);
+      }
+
+      function extractKeyPoints(turns) {
+        var points = [];
+        for (var i = 0; i < turns.length; i++) {
+          if (turns[i].role !== 'assistant') continue;
+          var s = firstSentence(turns[i].content);
+          if (s && points.indexOf(s) === -1) points.push(s);
+        }
+        if (points.length > MAX_KEY_POINTS) {
+          points = points.slice(-MAX_KEY_POINTS);
+        }
+        return points;
+      }
+
+      function getRecentTurns(turns, maxExchanges) {
+        var pairs = [];
+        var i = turns.length - 1;
+        while (i >= 0 && pairs.length < maxExchanges) {
+          var chunk = [];
+          if (turns[i].role === 'assistant') {
+            chunk.unshift(turns[i]);
+            if (i > 0 && turns[i - 1].role === 'user') {
+              chunk.unshift(turns[i - 1]);
+              i -= 2;
+            } else {
+              i -= 1;
+            }
+          } else if (turns[i].role === 'user') {
+            chunk.unshift(turns[i]);
+            i -= 1;
+          } else {
+            i -= 1;
+            continue;
+          }
+          pairs.unshift(chunk);
+        }
+        var result = [];
+        for (var j = 0; j < pairs.length; j++) {
+          result = result.concat(pairs[j]);
+        }
+        return result;
+      }
+
+      function roleLabel(role) {
+        return role === 'user' ? 'You' : 'ChatGPT';
+      }
+
+      function formatHandoff(turns) {
+        if (!turns.length) {
+          return 'No conversation detected. Paste text with "You:" and "ChatGPT:" labels, or use the bookmarklet on chatgpt.com.';
+        }
+
+        var topic = extractTopic(turns);
+        var keyPoints = extractKeyPoints(turns);
+        var lastUser = '';
+        for (var i = turns.length - 1; i >= 0; i--) {
+          if (turns[i].role === 'user') {
+            lastUser = turns[i].content;
+            break;
+          }
+        }
+
+        var recent = getRecentTurns(turns, MAX_EXCHANGES);
+        var lines = [];
+
+        lines.push('Continuing a conversation from ChatGPT. Here\'s the context:');
+        lines.push('');
+        lines.push('- We were discussing ' + topic);
+        if (keyPoints.length) {
+          lines.push('- Key points covered: ' + keyPoints.join('; '));
+        }
+        if (lastUser) {
+          lines.push('- Last question/topic: ' + truncate(lastUser.replace(/\s+/g, ' ').trim(), 200));
+        }
+        lines.push('');
+        lines.push('Recent exchanges:');
+        lines.push('');
+
+        for (var j = 0; j < recent.length; j++) {
+          lines.push(roleLabel(recent[j].role) + ': ' + truncate(recent[j].content.replace(/\s+/g, ' ').trim(), 400));
+          lines.push('');
+        }
+
+        lines.push('Please continue from here.');
+
+        return lines.join('\n');
+      }
+
+      window.ContextBridge = {
+        parseLabeledText: parseLabeledText,
+        formatHandoff: formatHandoff
+      };
+
+      var inputEl = document.getElementById('input');
+      var outputEl = document.getElementById('output');
+      var copyBtn = document.getElementById('copyBtn');
+      var toast = document.getElementById('toast');
+      var toastTimer;
+
+      function showToast(msg) {
+        toast.textContent = msg;
+        toast.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(function () {
+          toast.classList.remove('show');
+        }, 2500);
+      }
+
+      document.getElementById('formatBtn').addEventListener('click', function () {
+        var turns = parseLabeledText(inputEl.value);
+        var result = formatHandoff(turns);
+        outputEl.value = result;
+        copyBtn.disabled = !result || result.indexOf('No conversation detected') === 0;
+      });
+
+      copyBtn.addEventListener('click', function () {
+        if (!outputEl.value) return;
+        navigator.clipboard.writeText(outputEl.value).then(function () {
+          showToast('Copied to clipboard — paste into Claude');
+        }).catch(function () {
+          outputEl.select();
+          document.execCommand('copy');
+          showToast('Copied to clipboard — paste into Claude');
+        });
+      });
+
+      document.getElementById('clearBtn').addEventListener('click', function () {
+        inputEl.value = '';
+        outputEl.value = '';
+        copyBtn.disabled = true;
+      });
+    })();
+  </script>
+</body>
+</html>
