@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ContextBridge — ChatGPT to Claude handoff</title>
+  <link rel="icon" type="image/png" href="icon.png">
+  <link rel="apple-touch-icon" href="icon.png">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -37,6 +39,19 @@
       margin-bottom: 36px;
     }
 
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 11px;
+      flex-shrink: 0;
+    }
+
     header h1 {
       font-size: 1.75rem;
       font-weight: 700;
@@ -49,7 +64,7 @@
 
     header p {
       color: var(--muted);
-      margin-top: 8px;
+      margin-top: 12px;
       font-size: 0.95rem;
     }
 
@@ -198,7 +213,10 @@
 <body>
   <div class="wrap">
     <header>
-      <h1>Context<span>Bridge</span></h1>
+      <div class="brand">
+        <img class="brand-icon" src="icon.png" alt="ContextBridge icon" width="48" height="48">
+        <h1>Context<span>Bridge</span></h1>
+      </div>
       <p>Paste a ChatGPT conversation and get a clean handoff summary for Claude.</p>
     </header>
 
