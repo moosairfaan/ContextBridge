@@ -250,7 +250,7 @@
       var MAX_EXCHANGES = 4;
       var MAX_KEY_POINTS = 4;
 
-      function parseLabeledText(text) {
+      function parseYouChatGPTLabels(text) {
         var turns = [];
         var re = /(?:^|\n)(You|ChatGPT)\s*:\s*/gi;
         var match;
@@ -276,6 +276,73 @@
         }
 
         return turns;
+      }
+
+      function stripYouSaidPrefix(content) {
+        return content.replace(/^You\s+said\s*:\s*/i, '').trim();
+      }
+
+      function parseChatGPTSaid(text) {
+        var re = /(?:^|\n)ChatGPT\s+said\s*:\s*/gi;
+        var matches = [];
+        var match;
+        while ((match = re.exec(text)) !== null) {
+          matches.push({ index: match.index, end: match.index + match[0].length });
+        }
+        if (!matches.length) return [];
+
+        var turns = [];
+        var before = stripYouSaidPrefix(text.slice(0, matches[0].index).trim());
+        if (before) turns.push({ role: 'user', content: before });
+
+        for (var i = 0; i < matches.length; i++) {
+          var start = matches[i].end;
+          var end = i + 1 < matches.length ? matches[i + 1].index : text.length;
+          var segment = text.slice(start, end).trim();
+          if (!segment) continue;
+
+          var blankMatch = segment.match(/\n\s*\n/);
+          if (blankMatch && blankMatch.index > 0) {
+            var assistantPart = segment.slice(0, blankMatch.index).trim();
+            var userPart = stripYouSaidPrefix(segment.slice(blankMatch.index).trim());
+            if (assistantPart) turns.push({ role: 'assistant', content: assistantPart });
+            if (userPart) turns.push({ role: 'user', content: userPart });
+          } else {
+            turns.push({ role: 'assistant', content: segment });
+          }
+        }
+
+        return turns;
+      }
+
+      function parseBlankLines(text) {
+        var blocks = text.split(/\n\s*\n/);
+        var turns = [];
+        for (var i = 0; i < blocks.length; i++) {
+          var content = blocks[i].trim();
+          if (!content) continue;
+          turns.push({
+            role: turns.length % 2 === 0 ? 'user' : 'assistant',
+            content: content
+          });
+        }
+        if (turns.length) {
+          turns.roleAssignmentUncertain = true;
+        }
+        return turns;
+      }
+
+      function parseLabeledText(text) {
+        text = (text || '').trim();
+        if (!text) return [];
+
+        var turns = parseYouChatGPTLabels(text);
+        if (turns.length) return turns;
+
+        turns = parseChatGPTSaid(text);
+        if (turns.length) return turns;
+
+        return parseBlankLines(text);
       }
 
       function firstSentence(text) {
@@ -350,7 +417,7 @@
 
       function formatHandoff(turns) {
         if (!turns.length) {
-          return 'No conversation detected. Paste text with "You:" and "ChatGPT:" labels, or use the bookmarklet on chatgpt.com.';
+          return 'No conversation detected. Paste text with "You:" / "ChatGPT:" labels, "ChatGPT said:" markers, or blank-line-separated turns — or use the bookmarklet on chatgpt.com.';
         }
 
         var topic = extractTopic(turns);
@@ -368,6 +435,10 @@
 
         lines.push('Continuing a conversation from ChatGPT. Here\'s the context:');
         lines.push('');
+        if (turns.roleAssignmentUncertain) {
+          lines.push('Warning: No speaker labels were found, so roles were guessed by alternating blocks (starting with you). Role assignment may be inaccurate — please double-check who said what before continuing.');
+          lines.push('');
+        }
         lines.push('- We were discussing ' + topic);
         if (keyPoints.length) {
           lines.push('- Key points covered: ' + keyPoints.join('; '));
