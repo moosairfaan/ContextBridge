@@ -229,6 +229,7 @@
     <div class="actions">
       <button class="btn-primary" id="formatBtn">Format for Claude</button>
       <button class="btn-secondary" id="copyBtn" disabled>Copy output</button>
+      <button class="btn-secondary" id="openClaudeBtn" disabled>Open in Claude</button>
       <button class="btn-secondary" id="clearBtn">Clear</button>
     </div>
 
@@ -468,6 +469,7 @@
       var inputEl = document.getElementById('input');
       var outputEl = document.getElementById('output');
       var copyBtn = document.getElementById('copyBtn');
+      var openClaudeBtn = document.getElementById('openClaudeBtn');
       var toast = document.getElementById('toast');
       var toastTimer;
 
@@ -480,28 +482,45 @@
         }, 2500);
       }
 
+      function setOutputActionsEnabled(enabled) {
+        copyBtn.disabled = !enabled;
+        openClaudeBtn.disabled = !enabled;
+      }
+
+      function copyOutput(toastMsg) {
+        if (!outputEl.value) return Promise.resolve(false);
+        return navigator.clipboard.writeText(outputEl.value).then(function () {
+          showToast(toastMsg);
+          return true;
+        }).catch(function () {
+          outputEl.select();
+          document.execCommand('copy');
+          showToast(toastMsg);
+          return true;
+        });
+      }
+
       document.getElementById('formatBtn').addEventListener('click', function () {
         var turns = parseLabeledText(inputEl.value);
         var result = formatHandoff(turns);
         outputEl.value = result;
-        copyBtn.disabled = !result || result.indexOf('No conversation detected') === 0;
+        setOutputActionsEnabled(!!result && result.indexOf('No conversation detected') !== 0);
       });
 
       copyBtn.addEventListener('click', function () {
+        copyOutput('Copied to clipboard — paste into Claude');
+      });
+
+      openClaudeBtn.addEventListener('click', function () {
         if (!outputEl.value) return;
-        navigator.clipboard.writeText(outputEl.value).then(function () {
-          showToast('Copied to clipboard — paste into Claude');
-        }).catch(function () {
-          outputEl.select();
-          document.execCommand('copy');
-          showToast('Copied to clipboard — paste into Claude');
-        });
+        window.open('https://claude.ai/new', '_blank', 'noopener,noreferrer');
+        copyOutput('Copied — paste into the new Claude chat');
       });
 
       document.getElementById('clearBtn').addEventListener('click', function () {
         inputEl.value = '';
         outputEl.value = '';
-        copyBtn.disabled = true;
+        setOutputActionsEnabled(false);
       });
     })();
   </script>
