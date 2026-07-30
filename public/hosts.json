@@ -11,6 +11,9 @@
     "https://perplexity.ai/*",
     "https://www.perplexity.ai/*"
   ],
+  "api_host_permissions": [
+    "https://*/*"
+  ],
   "content_script_matches": [
     "https://chat.openai.com/*",
     "https://www.chat.openai.com/*",

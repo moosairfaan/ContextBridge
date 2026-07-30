@@ -14,12 +14,6 @@ export default defineConfig({
       },
     }),
   ],
-  optimizeDeps: {
-    exclude: ["@xenova/transformers"],
-  },
-  worker: {
-    format: "es",
-  },
   build: {
     outDir: "dist",
     emptyOutDir: true,
@@ -28,17 +22,6 @@ export default defineConfig({
       output: {
         chunkFileNames: "assets/[name]-[hash].js",
         entryFileNames: "assets/[name]-[hash].js",
-        manualChunks(id) {
-          if (
-            id.includes("@xenova/transformers") ||
-            id.includes("onnxruntime") ||
-            id.includes("summarizer.worker") ||
-            id.includes("summarizeClient") ||
-            id.includes("abstractive.ts")
-          ) {
-            return "ml-summarizer";
-          }
-        },
       },
     },
   },

@@ -1,3 +1,3 @@
-import { registerServiceWorker } from "./serviceWorker";
+import { registerServiceWorkerListeners } from "./registerServiceWorkerListeners";
 
-registerServiceWorker();
+registerServiceWorkerListeners();

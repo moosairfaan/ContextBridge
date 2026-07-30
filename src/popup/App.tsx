@@ -1,42 +1,53 @@
 import { useEffect, useState } from "react";
-import { pingBackground } from "../messaging/sendBackgroundMessage";
+import { checkServiceWorkerIsReachable } from "../messaging/sendMessageToServiceWorker";
 import styles from "./App.module.css";
-import ActiveContextView from "./views/ActiveContextView";
-import SessionsListView from "./views/SessionsListView";
-import SettingsView from "./views/SettingsView";
+import ActiveSummaryEditorView from "./views/ActiveSummaryEditorView";
+import ConversationSessionsListView from "./views/ConversationSessionsListView";
+import ExtensionSettingsView from "./views/ExtensionSettingsView";
 
-type TabId = "context" | "sessions" | "settings";
+type PopupTabName = "summary" | "sessions" | "settings";
 
-const TABS: { id: TabId; label: string; icon: string }[] = [
-  { id: "context", label: "Context", icon: "◈" },
-  { id: "sessions", label: "Sessions", icon: "☰" },
-  { id: "settings", label: "Settings", icon: "⚙" },
+const POPUP_NAVIGATION_TABS: {
+  tabName: PopupTabName;
+  label: string;
+  icon: string;
+}[] = [
+  { tabName: "summary", label: "Context", icon: "◈" },
+  { tabName: "sessions", label: "Sessions", icon: "☰" },
+  { tabName: "settings", label: "Settings", icon: "⚙" },
 ];
 
-const TAB_TITLES: Record<TabId, string> = {
-  context: "Active context",
+const POPUP_TAB_HEADING_TEXT: Record<PopupTabName, string> = {
+  summary: "Summary",
   sessions: "Sessions",
   settings: "Settings",
 };
 
 export default function App() {
-  const [tab, setTab] = useState<TabId>("context");
-  const [refreshKey, setRefreshKey] = useState(0);
-  const [bgConnected, setBgConnected] = useState<boolean | null>(null);
+  const [activePopupTab, setActivePopupTab] =
+    useState<PopupTabName>("summary");
+  const [activeSummaryViewRefreshKey, setActiveSummaryViewRefreshKey] =
+    useState(0);
+  const [isServiceWorkerReachable, setIsServiceWorkerReachable] = useState<
+    boolean | null
+  >(null);
 
   useEffect(() => {
-    void pingBackground().then(setBgConnected);
+    void checkServiceWorkerIsReachable().then(setIsServiceWorkerReachable);
   }, []);
 
-  const bump = () => setRefreshKey((k) => k + 1);
+  const refreshActiveSummaryEditorView = () =>
+    setActiveSummaryViewRefreshKey((previousKey) => previousKey + 1);
 
   return (
     <div className={styles.app}>
       <header className={styles.header}>
-        <h1 className={styles.title}>{TAB_TITLES[tab]}</h1>
+        <h1 className={styles.title}>
+          {POPUP_TAB_HEADING_TEXT[activePopupTab]}
+        </h1>
         <p className={styles.subtitle}>
           ContextBridge
-          {bgConnected === false && (
+          {isServiceWorkerReachable === false && (
             <span style={{ color: "#ef4444" }}> · background offline</span>
           )}
         </p>
@@ -44,37 +55,41 @@ export default function App() {
 
       <main className={styles.main}>
         <div className={styles.content}>
-          {tab === "context" && (
-            <ActiveContextView
-              key={refreshKey}
-              onSessionCleared={bump}
+          {activePopupTab === "summary" && (
+            <ActiveSummaryEditorView
+              key={activeSummaryViewRefreshKey}
+              onSessionCleared={refreshActiveSummaryEditorView}
             />
           )}
-          {tab === "sessions" && (
-            <SessionsListView
+          {activePopupTab === "sessions" && (
+            <ConversationSessionsListView
               onSessionActivated={() => {
-                bump();
-                setTab("context");
+                refreshActiveSummaryEditorView();
+                setActivePopupTab("summary");
               }}
             />
           )}
-          {tab === "settings" && <SettingsView />}
+          {activePopupTab === "settings" && <ExtensionSettingsView />}
         </div>
       </main>
 
       <nav className={styles.tabBar} aria-label="Main navigation">
-        {TABS.map((t) => (
+        {POPUP_NAVIGATION_TABS.map((navigationTab) => (
           <button
-            key={t.id}
+            key={navigationTab.tabName}
             type="button"
-            className={`${styles.tab} ${tab === t.id ? styles.tabActive : ""}`}
-            onClick={() => setTab(t.id)}
-            aria-current={tab === t.id ? "page" : undefined}
+            className={`${styles.tab} ${
+              activePopupTab === navigationTab.tabName ? styles.tabActive : ""
+            }`}
+            onClick={() => setActivePopupTab(navigationTab.tabName)}
+            aria-current={
+              activePopupTab === navigationTab.tabName ? "page" : undefined
+            }
           >
             <span className={styles.tabIcon} aria-hidden>
-              {t.icon}
+              {navigationTab.icon}
             </span>
-            {t.label}
+            {navigationTab.label}
           </button>
         ))}
       </nav>

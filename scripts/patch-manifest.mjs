@@ -9,7 +9,10 @@ const hostsPath = join(__dirname, "../public/hosts.json");
 const hosts = JSON.parse(readFileSync(hostsPath, "utf8"));
 const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
 
-manifest.host_permissions = hosts.host_permissions;
+manifest.host_permissions = [
+  ...hosts.host_permissions,
+  ...(hosts.api_host_permissions ?? []),
+];
 manifest.content_scripts = [
   {
     matches: hosts.content_script_matches,

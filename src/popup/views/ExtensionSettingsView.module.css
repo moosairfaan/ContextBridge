@@ -1,0 +1,16 @@
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.hint {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--cb-surface);
+  border: 1px solid var(--cb-border);
+  font-size: 11px;
+  color: var(--cb-text-muted);
+  line-height: 1.5;
+}
