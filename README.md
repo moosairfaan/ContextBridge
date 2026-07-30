@@ -1,83 +1,90 @@
 # ContextBridge
 
-Chrome extension (Manifest V3) that captures conversation context across AI chat platforms and injects compressed context when you switch between them.
+Carry a conversation from one AI chat to another. Paste a transcript (or grab it with a bookmarklet), get a compact handoff summary, then continue in Claude — or any other chat.
 
-Supported sites: ChatGPT (`chat.openai.com`, `chatgpt.com`), Claude (`claude.ai`), Gemini (`gemini.google.com`), Perplexity (`perplexity.ai`).
+## Repo layout
 
-## Setup
+| Path | What it is |
+|------|------------|
+| **Repo root** | Web app (Vite + React) — paste UI, bookmarklet, Vercel deploy |
+| **`extension/`** | Chrome MV3 extension (optional / legacy) |
 
-1. Clone the repository and open the project folder.
-2. Install dependencies:
+## Two ways to use the web app
 
-   ```bash
-   npm install
-   ```
+### 1. Manual paste
 
-3. Build the extension (or start watch mode for popup/background changes):
+1. Open the app home page.
+2. Paste a conversation into the text box.
+3. Pick a platform (or leave **Auto**).
+4. Click **Format for Claude**.
+5. **Copy** or **Open in Claude** (copies + opens `claude.ai/new` so you can paste).
 
-   ```bash
-   npm run build
-   # or
-   npm run dev
-   ```
+Label formats that work best:
 
-   After editing `src/content/`, rebuild the content script and patch the manifest:
+```text
+You: …
+ChatGPT: …
 
-   ```bash
-   npm run build:content && npm run patch:manifest
-   ```
+Human: …
+Claude: …
 
-4. Load the extension in Chrome:
-   - Open `chrome://extensions`
-   - Enable **Developer mode**
-   - Click **Load unpacked**
-   - Select the **`dist/`** folder (not the repo root)
-
-5. Optional type-check:
-
-   ```bash
-   npm run typecheck
-   ```
-
-6. Production build:
-
-   ```bash
-   npm run build
-   ```
-
-## Using ContextBridge
-
-- On any supported AI platform, a **floating brain button** appears in the bottom-right corner. Click it to toggle whether context injection is active.
-- Click the extension icon to open the **popup sidebar** (380×560): view/edit active compressed context, manage sessions, and change settings (compression strategy, auto-inject, max context size).
-- When you switch to a supported tab, the extension can automatically send compressed context to the page (if auto-inject and injection are enabled in Settings).
-
-## Build output (`dist/`)
-
-CRXJS compiles source paths from `public/manifest.json` into production assets:
-
-| Entry | Source (`public/manifest.json`) | Built output (`dist/`) |
-|-------|-------------------------------|-------------------------|
-| Popup | `src/popup/index.html` | `src/popup/index.html` + `assets/index.html-*.js` |
-| Background | `src/background/index.ts` | `service-worker-loader.js` + `assets/*.js` (ES module) |
-| Content script | *(patched post-build)* | `content-script.js` (IIFE, non-module) |
-
-`public/manifest.json` defines popup and background entry points. The content script is built separately as an IIFE (`vite.content.config.ts`) because Chrome content scripts must not run as ES modules. `scripts/patch-manifest.mjs` adds `content_scripts` to `dist/manifest.json` with matches for ChatGPT, Claude, Gemini, and Perplexity (`content-script.js`).
-
-## Project structure
-
-```
-src/
-  popup/          React sidebar UI
-  background/     MV3 service worker
-  content/        IIFE content script (platform adapters + floating toggle)
-  storage/        chrome.storage.local sessions + settings
-  compression/    Extractive + abstractive (Transformers.js) compression
-  platforms/      Per-site DOM adapters
-  messaging/      Shared message types (background ↔ content)
+You: …
+Gemini: …
 ```
 
-## Tech stack
+If there are no labels, blank-line-separated blocks are treated as alternating user / assistant turns.
 
-- React 18, TypeScript, Vite 6
-- [@crxjs/vite-plugin](https://crxjs.dev/vite-plugin) for extension bundling and watch builds
-- [@xenova/transformers](https://github.com/xenova/transformers.js) for optional local abstractive summarization
+### 2. Bookmarklet
+
+1. Open **/bookmarklet** in the app.
+2. Drag **📋 ContextBridge** to your bookmarks bar (or copy the `javascript:` URL).
+3. On ChatGPT, Claude, Gemini, or Perplexity, click the bookmark.
+4. A toast confirms the summary was copied — paste it into the next chat.
+
+The bookmarklet is self-contained (~10 KB), with no network calls and no React.
+
+## Supported platforms
+
+| Platform   | Paste labels                         | Bookmarklet (live DOM)   |
+|------------|--------------------------------------|--------------------------|
+| ChatGPT    | `You:` / `ChatGPT:`                  | chatgpt.com              |
+| Claude     | `Human:` / `Claude:` / `Assistant:`  | claude.ai                |
+| Gemini     | `You:` / `Gemini:`                   | gemini.google.com        |
+| Perplexity | generic / blank-line fallback        | perplexity.ai            |
+
+## Develop (web app)
+
+```bash
+npm install
+npm run dev
+```
+
+- App: http://localhost:5173  
+- Bookmarklet page: http://localhost:5173/bookmarklet  
+
+```bash
+npm test                 # unit tests
+npm run build            # bookmarklet + Vite production build
+npm run build:bookmarklet
+```
+
+## Chrome extension
+
+```bash
+cd extension
+npm install
+npm run build
+```
+
+Load unpacked from `extension/dist` in `chrome://extensions`. See `extension/README.md`.
+
+## Deploy (Vercel)
+
+- **Root directory:** repo root (not `extension/`)
+- **Build command:** `npm run build`
+- **Output directory:** `dist`
+- `vercel.json` rewrites all routes to `index.html` so `/bookmarklet` works with client-side routing.
+
+```bash
+npx vercel
+```

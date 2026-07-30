@@ -1,28 +1,12 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
-import { crx } from "@crxjs/vite-plugin";
-import manifest from "./public/manifest.json";
+import { defineConfig } from 'vitest/config'
+import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite'
 
+// https://vite.dev/config/
 export default defineConfig({
-  plugins: [
-    react(),
-    crx({
-      manifest,
-      contentScripts: {
-        preambleCode: false,
-        injectCss: true,
-      },
-    }),
-  ],
-  build: {
-    outDir: "dist",
-    emptyOutDir: true,
-    sourcemap: false,
-    rollupOptions: {
-      output: {
-        chunkFileNames: "assets/[name]-[hash].js",
-        entryFileNames: "assets/[name]-[hash].js",
-      },
-    },
+  plugins: [react(), tailwindcss()],
+  test: {
+    environment: 'node',
+    include: ['src/**/*.test.ts'],
   },
-});
+})

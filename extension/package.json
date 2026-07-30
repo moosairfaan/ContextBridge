@@ -1,0 +1,28 @@
+{
+  "name": "contextbridge",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:content": "vite build -c vite.content.config.ts",
+    "patch:manifest": "node scripts/patch-manifest.mjs",
+    "dev": "vite build && npm run build:content && npm run patch:manifest && vite build --watch",
+    "build": "vite build && npm run build:content && npm run patch:manifest",
+    "generate:icon": "node scripts/generate-icon.mjs",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@crxjs/vite-plugin": "^2.0.0-beta.28",
+    "@types/chrome": "^0.0.287",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "sharp": "^0.33.5",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.3"
+  }
+}
