@@ -2,6 +2,8 @@
 
 Carry a conversation from one AI chat to another. Paste a transcript (or grab it with a bookmarklet), get a compact handoff summary, then continue in Claude — or any other chat.
 
+**Live app:** [https://context-bridge-wine.vercel.app](https://context-bridge-wine.vercel.app)
+
 ## Repo layout
 
 | Path | What it is |
@@ -80,6 +82,8 @@ Load unpacked from `extension/dist` in `chrome://extensions`. See `extension/REA
 
 ## Deploy (Vercel)
 
+- **Live:** [https://context-bridge-wine.vercel.app](https://context-bridge-wine.vercel.app)
+- **Bookmarklet page:** [https://context-bridge-wine.vercel.app/bookmarklet](https://context-bridge-wine.vercel.app/bookmarklet)
 - **Root directory:** repo root (not `extension/`)
 - **Build command:** `npm run build`
 - **Output directory:** `dist`
